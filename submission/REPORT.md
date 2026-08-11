@@ -2,10 +2,13 @@
 
 ## 1. Thông tin nhóm
 
-- Tên nhóm:
-- Repository URL:
-- Commit SHA cuối:
+- Tên nhóm: Nhóm LPV
+- Repository URL: https://github.com/phunh1901/Day13-K4-Observability-LPV
+- Commit SHA cuối: 975d592
 - Thành viên và vai trò:
+  - Ngô Hoàng Phú: Role A — Logging & PII (Correlation ID, Context Metadata, PII Redaction)
+  - Đinh Quốc Việt: Role B — Tracing & Prompt Versioning (Langfuse Traces, Prompt v1/v2, Version Labels & Rollback)
+  - Nguyễn Trung Long: Role C — Dashboard, SLO & Alerts (6 Panel Dashboard, SLOs, Alert Rules & Runbook)
 
 ## 2. Kết quả kỹ thuật
 
@@ -52,8 +55,8 @@ Estimated Score: 100/100
 
 ## 3. Logging và tracing
 
-- Evidence correlation ID:
-- Evidence PII redaction:
+- Evidence correlation ID: `{"service": "api", "event": "request_received", "correlation_id": "req-2e63ddb0", "user_id_hash": "2055254ee30a", "session_id": "s01", "feature": "qa", "model": "claude-sonnet-4-5", "env": "dev"}`
+- Evidence PII redaction: `{"payload": {"message_preview": "What is your refund policy? My email is [REDACTED_EMAIL]"}, "event": "request_received", "correlation_id": "req-2e63ddb0"}`
 - Evidence trace waterfall: ![Trace Waterfall](./evidence/trace-waterfall.png)
 - Giải thích một span đáng chú ý: Span `run` thể hiện toàn bộ quy trình sinh câu trả lời của agent, đo lường latency (0.15s), tính toán chi phí ($0.001794), gắn nhãn session/user_id_hash và trích xuất đúng prompt managed `day13-chat` v1 từ Langfuse.
 
@@ -77,18 +80,21 @@ Estimated Score: 100/100
 
 ## 6. Điều tra challenge
 
-- Challenge ID:
-- Triệu chứng từ metrics:
-- Trace ID liên quan:
-- Log line/correlation ID liên quan:
-- Root cause:
-- Fix action:
-- Preventive measure:
+- Challenge ID: `day13-k4-observability-v1`
+- Triệu chứng từ metrics: Tail latency P95 tăng đột biến vượt ngưỡng 2000ms (đạt ~2650ms), tập trung chủ yếu ở các request thuộc feature `monitoring`.
+- Trace ID liên quan: `dfc9e5f03c4310e1d2b37f35bb02e321` (trên Langfuse hiển thị span RAG/retrieval chiếm ~2.5s).
+- Log line/correlation ID liên quan: `correlation_id: req-d67985c4`
+  ```json
+  {"service": "api", "latency_ms": 2659, "tokens_in": 35, "tokens_out": 160, "cost_usd": 0.002505, "quality_score": 0.8, "payload": {"answer_preview": "Starter answer. Teams should improve this output logic and add better quality ch..."}, "event": "response_sent", "model": "claude-sonnet-4-5", "session_id": "k4-challenge-s01", "env": "dev", "feature": "monitoring", "user_id_hash": "f00ba60b3772", "correlation_id": "req-d67985c4", "level": "info", "ts": "2026-08-11T09:55:30.230856Z"}
+  ```
+- Root cause: Cờ incident `rag_slow` trong `app/mock_rag.py` ở trạng thái `True`, kích hoạt `time.sleep(2.5)` làm chậm quá trình truy xuất văn bản RAG.
+- Fix action: Tắt cờ incident bằng API `/incidents/rag_slow/disable` (hoặc `python scripts/inject_incident.py --disable`) và bổ sung timeout 2.0s cho truy vấn RAG.
+- Preventive measure: Thiết lập Alert rule `HighTailLatency` khi P95 > 3000ms trong 5m; cấu hình Circuit Breaker và Fallback response khi RAG timeout.
 
 ## 7. Đóng góp cá nhân
 
-Với mỗi thành viên, ghi rõ nhiệm vụ và link commit/PR tương ứng.
-
 | Thành viên | Phần việc | Commit/PR | Điều đã học |
 |---|---|---|---|
-| | | | |
+| Ngô Hoàng Phú | Role A — Logging, Correlation ID & PII Redaction | `f009dca`, `975d592` | Hiểu cách lan truyền Correlation ID xuyên suốt HTTP request và cách scrub PII dữ liệu nhạy cảm trước khi lưu JSON log. |
+| Đinh Quốc Việt | Role B — Tracing & Prompt Versioning | `a25dfb4` | Hiểu cách gắn metadata cho Trace/Generation trên Langfuse và quy trình đổi label/rollback prompt an toàn. |
+| Nguyễn Trung Long | Role C — Dashboard, SLO & Alerts | `287ea96`, `e415399`, `0487ef6` | Thấu hiểu contract 6 panel dashboard, cách định nghĩa SLI/SLO và xây dựng Alert rule kèm Runbook sự cố. |
