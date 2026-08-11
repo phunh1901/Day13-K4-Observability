@@ -10,13 +10,22 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from app.cli import configure_utf8_stdio
 
 REQUIRED_EVIDENCE = (
+    "submission/evidence/challenge-trace-waterfall.png",
     "submission/evidence/cp2-dashboard.png",
     "submission/evidence/cp2-dashboard-validator.txt",
     "submission/evidence/cp2-log-validator.txt",
+    "submission/evidence/log-correlation-pii.jsonl",
     "submission/evidence/prompt-versions.png",
+    "submission/evidence/prompt-v1-production-after-rollback.png",
+    "submission/evidence/prompt-v2-production-before-rollback.png",
     "submission/evidence/trace-waterfall.png",
+    "submission/evidence/traces-list.png",
 )
 SECRET_PATTERNS = {
     "OpenAI API key": re.compile(r"\bsk-(?:proj-)?[A-Za-z0-9_-]{20,}\b"),
@@ -89,6 +98,7 @@ def _evidence_check() -> dict[str, Any]:
 
 
 def main() -> int:
+    configure_utf8_stdio()
     parser = argparse.ArgumentParser(description="Run the Day 13 submission gate")
     parser.add_argument("--output", type=Path)
     parser.add_argument(

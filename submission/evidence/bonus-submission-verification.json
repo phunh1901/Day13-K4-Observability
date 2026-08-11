@@ -1,24 +1,24 @@
 {
-  "generated_at": "2026-08-11T10:50:23.696929Z",
+  "generated_at": "2026-08-11T13:54:37.873154Z",
   "status": "passed",
   "checks": [
     {
       "name": "test suite",
       "status": "passed",
       "command": [
-        "/Users/tlng/miniconda/envs/day13-k4-observability/bin/python",
+        "D:\\Vin_Lab\\Day13-K4-Observability\\.venv\\Scripts\\python.exe",
         "-m",
         "pytest",
         "-q"
       ],
       "returncode": 0,
-      "output_tail": ".................................                                        [100%]\n33 passed in 0.90s"
+      "output_tail": ".................................                                        [100%]\n33 passed in 10.45s"
     },
     {
       "name": "dashboard contract",
       "status": "passed",
       "command": [
-        "/Users/tlng/miniconda/envs/day13-k4-observability/bin/python",
+        "D:\\Vin_Lab\\Day13-K4-Observability\\.venv\\Scripts\\python.exe",
         "scripts/validate_dashboard.py"
       ],
       "returncode": 0,
@@ -28,11 +28,11 @@
       "name": "runtime log validation",
       "status": "passed",
       "command": [
-        "/Users/tlng/miniconda/envs/day13-k4-observability/bin/python",
+        "D:\\Vin_Lab\\Day13-K4-Observability\\.venv\\Scripts\\python.exe",
         "scripts/validate_logs.py"
       ],
       "returncode": 0,
-      "output_tail": "--- Lab Verification Results ---\nTotal log records analyzed: 117\nRecords with missing required fields: 0\nRecords with missing enrichment (context): 0\nUnique correlation IDs found: 51\nPotential PII leaks detected: 0\n\n--- Grading Scorecard (Estimates) ---\n+ [PASSED] Basic JSON schema\n+ [PASSED] Correlation ID propagation\n+ [PASSED] Log enrichment\n+ [PASSED] PII scrubbing\n\nEstimated Score: 100/100"
+      "output_tail": "--- Lab Verification Results ---\nTotal log records analyzed: 78\nRecords with missing required fields: 0\nRecords with missing enrichment (context): 0\nUnique correlation IDs found: 37\nPotential PII leaks detected: 0\n\n--- Grading Scorecard (Estimates) ---\n+ [PASSED] Basic JSON schema\n+ [PASSED] Correlation ID propagation\n+ [PASSED] Log enrichment\n+ [PASSED] PII scrubbing\n\nEstimated Score: 100/100"
     },
     {
       "name": "git diff check",
@@ -43,7 +43,7 @@
         "--check"
       ],
       "returncode": 0,
-      "output_tail": ""
+      "output_tail": "warning: in the working copy of 'app/mock_rag.py', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'scripts/verify_submission.py', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'submission/REPORT.md', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'submission/evidence/challenge-investigation.md', LF will be replaced by CRLF the next time Git touches it"
     },
     {
       "name": "submission file secret scan",
@@ -54,11 +54,16 @@
       "name": "required evidence files",
       "status": "passed",
       "required": [
+        "submission/evidence/challenge-trace-waterfall.png",
         "submission/evidence/cp2-dashboard.png",
         "submission/evidence/cp2-dashboard-validator.txt",
         "submission/evidence/cp2-log-validator.txt",
+        "submission/evidence/log-correlation-pii.jsonl",
         "submission/evidence/prompt-versions.png",
-        "submission/evidence/trace-waterfall.png"
+        "submission/evidence/prompt-v1-production-after-rollback.png",
+        "submission/evidence/prompt-v2-production-before-rollback.png",
+        "submission/evidence/trace-waterfall.png",
+        "submission/evidence/traces-list.png"
       ],
       "missing": []
     }

@@ -13,7 +13,7 @@
 ## 2. Kết quả kỹ thuật
 
 - Điểm `validate_logs.py`: 100/100 sau khi merge Role A CP1 (`submission/evidence/cp2-log-validator.txt`)
-- Tổng số traces: >= 10; nhóm ghi nhận 264+ traces trong project Langfuse.
+- Tổng số traces: >= 10; nhóm ghi nhận 264+ traces trong project Langfuse. Evidence danh sách: `submission/evidence/traces-list.png`.
 - Số PII leak còn lại: 0
 - Link/đường dẫn dashboard: `/dashboard`; runtime data `/dashboard/data`; snapshot `submission/evidence/cp2-dashboard-runtime.json`
 
@@ -55,8 +55,7 @@ Estimated Score: 100/100
 
 ## 3. Logging và tracing
 
-- Evidence correlation ID: `{"service": "api", "event": "request_received", "correlation_id": "req-2e63ddb0", "user_id_hash": "2055254ee30a", "session_id": "s01", "feature": "qa", "model": "claude-sonnet-4-5", "env": "dev"}`
-- Evidence PII redaction: `{"payload": {"message_preview": "What is your refund policy? My email is [REDACTED_EMAIL]"}, "event": "request_received", "correlation_id": "req-2e63ddb0"}`
+- Evidence correlation ID và PII redaction: `submission/evidence/log-correlation-pii.jsonl` chứa cặp `request_received`/`response_sent` thật có cùng correlation ID, đủ context metadata và giá trị PII đã được thay bằng `[REDACTED_*]`.
 - Evidence trace waterfall: ![Trace Waterfall](./evidence/trace-waterfall.png)
 - Giải thích một span đáng chú ý: Span `run` thể hiện toàn bộ quy trình sinh câu trả lời của agent, đo lường latency (0.15s), tính toán chi phí ($0.001794), gắn nhãn session/user_id_hash và trích xuất đúng prompt managed `day13-chat` v1 từ Langfuse.
 
@@ -68,7 +67,8 @@ Estimated Score: 100/100
 - Trace ID của mỗi version:
   - Baseline (v1 / production): `b9c4549e9a7ddd85cb9e4715d37aee27`
   - Candidate (v2 / candidate): `29936f94fca5f071e230b77d574cf0c2`
-- Bằng chứng version/label hiện tại: `submission/evidence/prompt-versions.png` hiển thị v1=`production`, v2=`candidate`. Nhóm đã thực hiện đổi label và rollback về v1; cần bổ sung ảnh trước/sau riêng nếu giảng viên yêu cầu lịch sử thao tác trực quan.
+- Bằng chứng version/label hiện tại: `submission/evidence/prompt-versions.png` hiển thị v1=`production`, v2=`candidate`.
+- Bằng chứng rollback trực quan: `submission/evidence/prompt-v2-production-before-rollback.png` và `submission/evidence/prompt-v1-production-after-rollback.png`.
 ![Prompt Versions](./evidence/prompt-versions.png)
 
 ## 5. Dashboard, SLO và alerts
@@ -82,15 +82,15 @@ Estimated Score: 100/100
 
 - Challenge ID: `day13-k4-observability-v1`
 - Triệu chứng từ metrics: Tail latency P95 tăng đột biến vượt ngưỡng 2000ms (đạt ~2650ms), tập trung chủ yếu ở các request thuộc feature `monitoring`.
-- Trace ID liên quan: `dfc9e5f03c4310e1d2b37f35bb02e321` (trên Langfuse hiển thị span RAG/retrieval chiếm ~2.5s).
-- Log line/correlation ID liên quan: `correlation_id: req-d67985c4`
+- Trace ID liên quan: `830e202f4edbdb24b6cbea131f32eca0` (Langfuse ghi nhận generation `run` 2.652s và child span `rag_retrieve` 2.501s).
+- Log line/correlation ID liên quan: `correlation_id: req-55d79463`
   ```json
-  {"service": "api", "latency_ms": 2659, "tokens_in": 35, "tokens_out": 160, "cost_usd": 0.002505, "quality_score": 0.8, "payload": {"answer_preview": "Starter answer. Teams should improve this output logic and add better quality ch..."}, "event": "response_sent", "model": "claude-sonnet-4-5", "session_id": "k4-challenge-s01", "env": "dev", "feature": "monitoring", "user_id_hash": "f00ba60b3772", "correlation_id": "req-d67985c4", "level": "info", "ts": "2026-08-11T09:55:30.230856Z"}
+  {"service": "api", "latency_ms": 2651, "tokens_in": 35, "tokens_out": 120, "cost_usd": 0.001905, "quality_score": 0.8, "event": "response_sent", "model": "claude-sonnet-4-5", "session_id": "k4-challenge-s01", "env": "dev", "feature": "monitoring", "user_id_hash": "f00ba60b3772", "correlation_id": "req-55d79463", "level": "info", "ts": "2026-08-11T13:36:18.692653Z"}
   ```
 - Root cause: Cờ incident `rag_slow` trong `app/mock_rag.py` ở trạng thái `True`, kích hoạt `time.sleep(2.5)` làm chậm quá trình truy xuất văn bản RAG.
 - Fix action: Mitigation đã thực hiện là tắt cờ incident bằng API `/incidents/rag_slow/disable` (hoặc `python scripts/inject_incident.py --disable`). Fix code được đề xuất là timeout 2.0s cho retrieval kèm fallback; không tuyên bố đã triển khai timeout.
 - Preventive measure: Alert `HighTailLatency` cảnh báo sớm khi P95 > 2000ms trong 5m, trước SLO 3000ms; đề xuất thêm Circuit Breaker và fallback response khi RAG timeout.
-- Evidence tổng hợp: `submission/evidence/challenge-investigation.md`. `trace-waterfall.png` là baseline waterfall; challenge trace cần mở lại bằng trace ID ở trên khi demo.
+- Evidence tổng hợp: `submission/evidence/challenge-investigation.md`. `trace-waterfall.png` là baseline; waterfall challenge có span `rag_retrieve` riêng được lưu tại `submission/evidence/challenge-trace-waterfall.png`.
 
 ## 7. Đóng góp cá nhân
 
