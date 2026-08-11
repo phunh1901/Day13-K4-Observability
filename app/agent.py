@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import time
 from dataclasses import dataclass
+from structlog.contextvars import get_contextvars
 
 from . import metrics
 from .mock_llm import FakeLLM
