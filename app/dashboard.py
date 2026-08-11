@@ -113,7 +113,13 @@ def build_dashboard_snapshot(
     latency_threshold = panels["latency"]["threshold"]
 
     traffic_series = _minute_series(requests)
-    current_rpm = traffic_series[-1]["value"] if traffic_series else 0.0
+    current_minute = generated_at.replace(second=0, microsecond=0).isoformat().replace(
+        "+00:00", "Z"
+    )
+    current_rpm = next(
+        (point["value"] for point in traffic_series if point["minute"] == current_minute),
+        0.0,
+    )
     traffic_threshold = panels["traffic"]["threshold"]
 
     error_rate = (len(failures) / len(requests) * 100) if requests else 0.0
@@ -140,7 +146,7 @@ def build_dashboard_snapshot(
         "generated_at": generated_at.isoformat().replace("+00:00", "Z"),
         "time_range_minutes": window_minutes,
         "refresh_seconds": dashboard_config["refresh_seconds"],
-        "source": str(log_path),
+        "source": panels["latency"]["source"],
         "records_in_window": len(records),
         "malformed_lines": malformed,
         "panels": {

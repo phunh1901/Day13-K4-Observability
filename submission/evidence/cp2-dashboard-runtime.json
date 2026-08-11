@@ -1,0 +1,186 @@
+{
+  "title": "Day 13 AI Observability",
+  "generated_at": "2026-08-11T08:20:09.644607Z",
+  "time_range_minutes": 60,
+  "refresh_seconds": 30,
+  "source": "data/logs.jsonl",
+  "records_in_window": 41,
+  "malformed_lines": 0,
+  "panels": {
+    "latency": {
+      "title": "Latency percentiles",
+      "unit": "ms",
+      "p50": 160.0,
+      "p95": 1644.0,
+      "p99": 1644.0,
+      "threshold": {
+        "aggregation": "p95",
+        "operator": "lte",
+        "value": 3000
+      },
+      "status": "within",
+      "series": [
+        {
+          "timestamp": "2026-08-11T08:18:13.714143Z",
+          "value": 1644
+        },
+        {
+          "timestamp": "2026-08-11T08:18:13.875064Z",
+          "value": 153
+        },
+        {
+          "timestamp": "2026-08-11T08:18:14.034935Z",
+          "value": 155
+        },
+        {
+          "timestamp": "2026-08-11T08:18:14.198949Z",
+          "value": 160
+        },
+        {
+          "timestamp": "2026-08-11T08:18:14.360079Z",
+          "value": 160
+        },
+        {
+          "timestamp": "2026-08-11T08:18:14.521717Z",
+          "value": 160
+        },
+        {
+          "timestamp": "2026-08-11T08:18:14.684699Z",
+          "value": 160
+        },
+        {
+          "timestamp": "2026-08-11T08:18:14.843724Z",
+          "value": 154
+        },
+        {
+          "timestamp": "2026-08-11T08:18:15.007347Z",
+          "value": 159
+        },
+        {
+          "timestamp": "2026-08-11T08:18:15.171343Z",
+          "value": 160
+        },
+        {
+          "timestamp": "2026-08-11T08:20:07.271463Z",
+          "value": 156
+        },
+        {
+          "timestamp": "2026-08-11T08:20:07.432591Z",
+          "value": 160
+        },
+        {
+          "timestamp": "2026-08-11T08:20:07.594794Z",
+          "value": 160
+        },
+        {
+          "timestamp": "2026-08-11T08:20:07.752945Z",
+          "value": 154
+        },
+        {
+          "timestamp": "2026-08-11T08:20:07.917762Z",
+          "value": 159
+        },
+        {
+          "timestamp": "2026-08-11T08:20:08.085036Z",
+          "value": 160
+        },
+        {
+          "timestamp": "2026-08-11T08:20:08.246874Z",
+          "value": 160
+        },
+        {
+          "timestamp": "2026-08-11T08:20:08.407892Z",
+          "value": 160
+        },
+        {
+          "timestamp": "2026-08-11T08:20:08.568944Z",
+          "value": 160
+        },
+        {
+          "timestamp": "2026-08-11T08:20:08.731275Z",
+          "value": 160
+        }
+      ]
+    },
+    "traffic": {
+      "title": "Request traffic",
+      "unit": "requests_per_minute",
+      "count": 20,
+      "rate_per_minute": 10.0,
+      "threshold": {
+        "aggregation": "rate_per_minute",
+        "operator": "gte",
+        "value": 1
+      },
+      "status": "within",
+      "series": [
+        {
+          "minute": "2026-08-11T08:18:00Z",
+          "value": 10.0
+        },
+        {
+          "minute": "2026-08-11T08:20:00Z",
+          "value": 10.0
+        }
+      ]
+    },
+    "errors": {
+      "title": "Error rate and breakdown",
+      "unit": "percent",
+      "error_rate_pct": 0.0,
+      "count": 0,
+      "breakdown": {},
+      "threshold": {
+        "aggregation": "error_rate_pct",
+        "operator": "lte",
+        "value": 2
+      },
+      "status": "within"
+    },
+    "cost": {
+      "title": "Cost over time",
+      "unit": "usd",
+      "total": 0.040836,
+      "threshold": {
+        "aggregation": "total",
+        "operator": "lte",
+        "value": 2.5
+      },
+      "status": "within",
+      "series": [
+        {
+          "minute": "2026-08-11T08:18:00Z",
+          "value": 0.021858
+        },
+        {
+          "minute": "2026-08-11T08:20:00Z",
+          "value": 0.018978
+        }
+      ]
+    },
+    "tokens": {
+      "title": "Input and output tokens",
+      "unit": "tokens",
+      "tokens_in": 662,
+      "tokens_out": 2590,
+      "total": 3252,
+      "threshold": {
+        "aggregation": "sum_by_field",
+        "operator": "lte",
+        "value": 50000
+      },
+      "status": "within"
+    },
+    "quality": {
+      "title": "Quality proxy",
+      "unit": "score_0_to_1",
+      "mean": 0.88,
+      "threshold": {
+        "aggregation": "mean",
+        "operator": "gte",
+        "value": 0.75
+      },
+      "status": "within"
+    }
+  }
+}
