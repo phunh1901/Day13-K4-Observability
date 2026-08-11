@@ -10,7 +10,7 @@
 ## 2. Kết quả kỹ thuật
 
 - Điểm `validate_logs.py`: 100/100 sau khi merge Role A CP1 (`submission/evidence/cp2-log-validator.txt`)
-- Tổng số traces:
+- Tổng số traces: > 10 (ghi nhận 264+ traces trên Langfuse)
 - Số PII leak còn lại: 0
 - Link/đường dẫn dashboard: `/dashboard`; runtime data `/dashboard/data`; snapshot `submission/evidence/cp2-dashboard-runtime.json`
 
@@ -54,16 +54,19 @@ Estimated Score: 100/100
 
 - Evidence correlation ID:
 - Evidence PII redaction:
-- Evidence trace waterfall:
-- Giải thích một span đáng chú ý:
+- Evidence trace waterfall: ![Trace Waterfall](./evidence/trace-waterfall.png)
+- Giải thích một span đáng chú ý: Span `run` thể hiện toàn bộ quy trình sinh câu trả lời của agent, đo lường latency (0.15s), tính toán chi phí ($0.001794), gắn nhãn session/user_id_hash và trích xuất đúng prompt managed `day13-chat` v1 từ Langfuse.
 
 ## 4. Prompt versioning
 
-- Prompt name:
-- Version/label baseline:
-- Version/label candidate:
+- Prompt name: day13-chat
+- Version/label baseline: v1 (production)
+- Version/label candidate: v2 (candidate)
 - Trace ID của mỗi version:
-- Bằng chứng đổi label hoặc rollback:
+  - Baseline (v1 / production): `b9c4549e9a7ddd85cb9e4715d37aee27`
+  - Candidate (v2 / candidate): `29936f94fca5f071e230b77d574cf0c2`
+- Bằng chứng đổi label hoặc rollback: Đã kiểm chứng chuyển label từ `production` (v1) sang `candidate` (v2) và rollback về `production` (v1). Trace metadata trên Langfuse ghi nhận chính xác `prompt_version` và `prompt_label` tương ứng.
+![Prompt Versions](./evidence/prompt-versions.png)
 
 ## 5. Dashboard, SLO và alerts
 
