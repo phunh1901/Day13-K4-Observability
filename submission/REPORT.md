@@ -4,7 +4,7 @@
 
 - Tên nhóm: Nhóm LPV
 - Repository URL: https://github.com/phunh1901/Day13-K4-Observability-LPV
-- Commit SHA cuối: lấy tại thời điểm nộp bằng `git rev-parse HEAD`
+- Commit SHA cuối: 9d0b0b16cb4a11f5dd74e200e9cd84a618de655b
 - Thành viên và vai trò:
   - Ngô Hoàng Phú: Role A — Logging & PII (Correlation ID, Context Metadata, PII Redaction)
   - Đinh Quốc Việt: Role B — Tracing & Prompt Versioning (Langfuse Traces, Prompt v1/v2, Version Labels & Rollback)
