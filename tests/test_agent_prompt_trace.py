@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from structlog.contextvars import bind_contextvars, clear_contextvars
+
 from app import agent as agent_module
 
 
@@ -37,6 +39,8 @@ def test_agent_links_prompt_version_to_trace_and_generation(monkeypatch) -> None
     monkeypatch.setenv("LANGFUSE_PROMPT_LABEL", "production")
     client = RecordingLangfuseClient()
     monkeypatch.setattr(agent_module, "get_langfuse_client", lambda: client)
+    clear_contextvars()
+    bind_contextvars(correlation_id="req-1234abcd")
 
     agent = agent_module.LabAgent()
     agent_module.LabAgent.run.__wrapped__(
@@ -54,6 +58,10 @@ def test_agent_links_prompt_version_to_trace_and_generation(monkeypatch) -> None
         "prompt_label": "production",
         "prompt_version": "3",
         "prompt_source": "langfuse",
+        "correlation_id": "req-1234abcd",
+        "output_token_limit": 120,
+        "llm_provider": "fake",
     }
     assert generation_update["prompt"] is client.prompt
     assert generation_update["metadata"]["prompt_version"] == "3"
+    assert generation_update["metadata"]["correlation_id"] == "req-1234abcd"

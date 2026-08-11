@@ -94,8 +94,14 @@ Một người có thể giữ hai vai trò khi nhóm ít người; không tách
 
 ## Lưu ý
 
-- App dùng fake LLM nên phần practice không cần API key trả phí.
+- Runtime submission dùng OpenAI Responses API khi `LLM_PROVIDER=openai`; đây là API trả phí theo usage. `LLM_PROVIDER=fake` chỉ dành cho public tests/offline development và không được dùng làm evidence cost bonus.
 - Langfuse chung/cloud là cách mặc định; Docker Compose local chỉ là lựa chọn dự phòng trong `SETUP.md`.
 - Không có Langfuse key, app vẫn chạy bằng prompt local nhưng bạn không có bằng chứng trace/prompt version để lấy trọn điểm.
 - `validate_logs.py` chỉ là kiểm tra kỹ thuật nhanh, không phải điểm cuối cùng.
 - Không commit `.env`, API key, `.venv/` hoặc log chứa dữ liệu nhạy cảm.
+
+## Bonus hardening
+
+Repo có real-provider output-token control, audit log riêng và submission gate tự
+động. Cách cấu hình, benchmark và thu evidence nằm trong
+[`docs/BONUS.md`](docs/BONUS.md).

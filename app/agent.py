@@ -5,9 +5,14 @@ from dataclasses import dataclass
 from structlog.contextvars import get_contextvars
 
 from . import metrics
-from .mock_llm import FakeLLM
+from .cost_control import (
+    configured_output_token_limit,
+    configured_pricing,
+    estimate_cost_usd,
+)
+from .llm_provider import build_llm
 from .mock_rag import retrieve
-from .pii import hash_user_id, summarize_text
+from .pii import hash_user_id, scrub_text, summarize_text
 from .prompt_management import resolve_prompt
 from .tracing import get_langfuse_client, observe, tracing_enabled
 
@@ -20,29 +25,44 @@ class AgentResult:
     tokens_out: int
     cost_usd: float
     quality_score: float
+    output_token_limit: int | None
 
 
 class LabAgent:
-    def __init__(self, model: str = "claude-sonnet-4-5") -> None:
-        self.model = model
-        self.llm = FakeLLM(model=model)
+    def __init__(self, model: str | None = None) -> None:
+        self.llm = build_llm(model)
+        self.model = self.llm.model
+        self.provider = self.llm.provider
+        self.input_cost_per_million, self.output_cost_per_million = configured_pricing(
+            self.provider
+        )
+        self.output_token_limit = configured_output_token_limit()
 
     @observe(as_type="generation", capture_input=False, capture_output=False)
     def run(self, user_id: str, feature: str, session_id: str, message: str) -> AgentResult:
         started = time.perf_counter()
         docs = retrieve(message)
+        safe_message = scrub_text(message)
         langfuse_client = get_langfuse_client()
         prompt = resolve_prompt(
             langfuse_client,
             feature=feature,
             docs=docs,
-            message=message,
+            message=safe_message,
             enabled=tracing_enabled(),
         )
-        response = self.llm.generate(prompt.text)
-        quality_score = self._heuristic_quality(message, response.text, docs)
+        response = self.llm.generate(
+            prompt.text, max_output_tokens=self.output_token_limit
+        )
+        quality_score = self._heuristic_quality(safe_message, response.text, docs)
         latency_ms = int((time.perf_counter() - started) * 1000)
-        cost_usd = self._estimate_cost(response.usage.input_tokens, response.usage.output_tokens)
+        cost_usd = estimate_cost_usd(
+            response.usage.input_tokens,
+            response.usage.output_tokens,
+            input_cost_per_million=self.input_cost_per_million,
+            output_cost_per_million=self.output_cost_per_million,
+        )
+        correlation_id = get_contextvars().get("correlation_id")
 
         langfuse_client.update_current_trace(
             user_id=hash_user_id(user_id),
@@ -53,6 +73,9 @@ class LabAgent:
                 "prompt_label": prompt.label,
                 "prompt_version": prompt.version,
                 "prompt_source": prompt.source,
+                "correlation_id": correlation_id,
+                "output_token_limit": self.output_token_limit,
+                "llm_provider": self.provider,
             },
         )
         langfuse_client.update_current_generation(
@@ -65,6 +88,9 @@ class LabAgent:
                 "prompt_version": prompt.version,
                 "prompt_source": prompt.source,
                 "prompt_fetch_error": prompt.fetch_error,
+                "correlation_id": correlation_id,
+                "output_token_limit": self.output_token_limit,
+                "llm_provider": self.provider,
             },
             usage_details={
                 "prompt_tokens": response.usage.input_tokens,
@@ -89,12 +115,8 @@ class LabAgent:
             tokens_out=response.usage.output_tokens,
             cost_usd=cost_usd,
             quality_score=quality_score,
+            output_token_limit=self.output_token_limit,
         )
-
-    def _estimate_cost(self, tokens_in: int, tokens_out: int) -> float:
-        input_cost = (tokens_in / 1_000_000) * 3
-        output_cost = (tokens_out / 1_000_000) * 15
-        return round(input_cost + output_cost, 6)
 
     def _heuristic_quality(self, question: str, answer: str, docs: list[str]) -> float:
         score = 0.5
@@ -102,7 +124,9 @@ class LabAgent:
             score += 0.2
         if len(answer) > 40:
             score += 0.1
-        if question.lower().split()[0:1] and any(token in answer.lower() for token in question.lower().split()[:3]):
+        if question.lower().split()[0:1] and any(
+            token in answer.lower() for token in question.lower().split()[:3]
+        ):
             score += 0.1
         if "[REDACTED" in answer:
             score -= 0.2

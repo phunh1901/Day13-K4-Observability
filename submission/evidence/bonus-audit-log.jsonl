@@ -1,0 +1,2 @@
+{"action": "incident.enable", "actor": "control-api", "correlation_id": "req-3d6a6321", "details": {"enabled": true}, "event": "audit_event", "outcome": "success", "resource": "incident/rag_slow", "ts": "2026-08-11T10:44:58.679803Z"}
+{"action": "incident.disable", "actor": "control-api", "correlation_id": "req-eac3e7a9", "details": {"enabled": false}, "event": "audit_event", "outcome": "success", "resource": "incident/rag_slow", "ts": "2026-08-11T10:44:58.680527Z"}

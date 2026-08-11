@@ -7,7 +7,7 @@ Mỗi alert phải dựa trên triệu chứng người dùng hoặc SLO, không
 - Tên: HighTailLatency
 - Severity: warning
 - SLI/SLO liên quan: P95 latency <= 3000 ms trong 99.5% cửa sổ 5 phút của 28 ngày.
-- Điều kiện và thời gian duy trì: `latency_p95_ms > 3000` liên tục 5 phút.
+- Điều kiện và thời gian duy trì: cảnh báo sớm khi `latency_p95_ms > 2000` liên tục 5 phút, trước khi vi phạm SLO 3000 ms.
 - Ảnh hưởng tới người dùng: câu trả lời chậm, dễ timeout hoặc người dùng gửi lại request.
 - Ba bước kiểm tra đầu tiên: (1) xác nhận P50/P95/P99 và traffic trong cùng cửa sổ; (2) mở trace chậm, so sánh span retrieval và generation; (3) tìm log bằng correlation ID để xác nhận feature, model và lỗi phụ thuộc.
 - Mitigation tạm thời: tắt incident/feature gây chậm, giảm concurrency hoặc dùng fallback retrieval; theo dõi P95 ít nhất 10 phút sau mitigation.

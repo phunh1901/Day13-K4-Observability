@@ -1,0 +1,42 @@
+{
+  "generated_at": "2026-08-11T10:49:19.008890Z",
+  "provider": "openai",
+  "model": "gpt-5.6-luna",
+  "method": {
+    "paired_inputs": 5,
+    "inputs": "first N records from data/sample_queries.jsonl",
+    "pii_scrubbed_before_provider": true,
+    "answers_or_prompts_stored": false,
+    "pricing_usd_per_million": {
+      "input": 1.0,
+      "output": 6.0
+    }
+  },
+  "before": {
+    "requests": 5,
+    "max_output_tokens": 400,
+    "text_verbosity": "medium",
+    "input_tokens": 191,
+    "output_tokens": 693,
+    "cost_usd": 0.004349,
+    "latency_mean_ms": 3415.27,
+    "quality_mean": 0.88
+  },
+  "after": {
+    "requests": 5,
+    "max_output_tokens": 120,
+    "text_verbosity": "low",
+    "input_tokens": 191,
+    "output_tokens": 399,
+    "cost_usd": 0.002585,
+    "latency_mean_ms": 2118.34,
+    "quality_mean": 0.88
+  },
+  "savings": {
+    "output_tokens": 294,
+    "output_tokens_pct": 42.42,
+    "cost_usd": 0.001764,
+    "cost_pct": 40.56,
+    "quality_delta": 0.0
+  }
+}

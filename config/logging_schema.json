@@ -18,6 +18,8 @@
     "tokens_out": {"type": ["integer", "null"]},
     "cost_usd": {"type": ["number", "null"]},
     "quality_score": {"type": ["number", "null"]},
+    "output_token_limit": {"type": ["integer", "null"]},
+    "llm_provider": {"type": ["string", "null"]},
     "error_type": {"type": ["string", "null"]},
     "tool_name": {"type": ["string", "null"]},
     "payload": {"type": ["object", "null"]}

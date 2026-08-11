@@ -1,0 +1,66 @@
+{
+  "generated_at": "2026-08-11T10:50:23.696929Z",
+  "status": "passed",
+  "checks": [
+    {
+      "name": "test suite",
+      "status": "passed",
+      "command": [
+        "/Users/tlng/miniconda/envs/day13-k4-observability/bin/python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "returncode": 0,
+      "output_tail": ".................................                                        [100%]\n33 passed in 0.90s"
+    },
+    {
+      "name": "dashboard contract",
+      "status": "passed",
+      "command": [
+        "/Users/tlng/miniconda/envs/day13-k4-observability/bin/python",
+        "scripts/validate_dashboard.py"
+      ],
+      "returncode": 0,
+      "output_tail": "HỢP LỆ: 6/6 panel có trong dashboard contract."
+    },
+    {
+      "name": "runtime log validation",
+      "status": "passed",
+      "command": [
+        "/Users/tlng/miniconda/envs/day13-k4-observability/bin/python",
+        "scripts/validate_logs.py"
+      ],
+      "returncode": 0,
+      "output_tail": "--- Lab Verification Results ---\nTotal log records analyzed: 117\nRecords with missing required fields: 0\nRecords with missing enrichment (context): 0\nUnique correlation IDs found: 51\nPotential PII leaks detected: 0\n\n--- Grading Scorecard (Estimates) ---\n+ [PASSED] Basic JSON schema\n+ [PASSED] Correlation ID propagation\n+ [PASSED] Log enrichment\n+ [PASSED] PII scrubbing\n\nEstimated Score: 100/100"
+    },
+    {
+      "name": "git diff check",
+      "status": "passed",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "returncode": 0,
+      "output_tail": ""
+    },
+    {
+      "name": "submission file secret scan",
+      "status": "passed",
+      "findings": []
+    },
+    {
+      "name": "required evidence files",
+      "status": "passed",
+      "required": [
+        "submission/evidence/cp2-dashboard.png",
+        "submission/evidence/cp2-dashboard-validator.txt",
+        "submission/evidence/cp2-log-validator.txt",
+        "submission/evidence/prompt-versions.png",
+        "submission/evidence/trace-waterfall.png"
+      ],
+      "missing": []
+    }
+  ]
+}

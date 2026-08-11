@@ -5,6 +5,7 @@
 - Python 3.11 trở lên.
 - Git.
 - Tài khoản hoặc project Langfuse do Lab Coach cung cấp.
+- OpenAI API key khi chạy real-provider mode (có phát sinh chi phí theo usage).
 - Docker Desktop chỉ cần khi tự chọn chạy Langfuse local.
 
 ## 1. Tạo virtual environment
@@ -39,9 +40,19 @@ LANGFUSE_SECRET_KEY=
 LANGFUSE_HOST=https://cloud.langfuse.com
 LANGFUSE_PROMPT_NAME=day13-chat
 LANGFUSE_PROMPT_LABEL=production
+LLM_PROVIDER=openai
+LLM_MODEL=gpt-5.6-luna
+LLM_MAX_OUTPUT_TOKENS=120
+LLM_INPUT_COST_PER_MILLION=1
+LLM_OUTPUT_COST_PER_MILLION=6
+OPENAI_API_KEY=
 ```
 
 Không commit `.env`. Nếu chưa có key, app vẫn chạy bằng prompt local; bạn vẫn làm được log, metrics và public tests nhưng chưa có evidence trace/prompt version.
+
+`OPENAI_API_KEY` chỉ cần cho real-provider mode. Để chạy offline/public tests mà
+không gọi API ngoài, đặt `LLM_PROVIDER=fake`. Không dùng số liệu fake làm evidence
+cost before/after.
 
 ## 3. Tùy chọn: chạy Langfuse local bằng Docker Compose
 
